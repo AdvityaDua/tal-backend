@@ -14,11 +14,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'techniki.tech', '.techniki.tech']
 
-CORS_ALLOWED_ORIGINS = [
-    "https://techniki.tech",
-    "https://www.techniki.tech",
-    "https://*.vercel.app",
-]
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 INSTALLED_APPS = [
     'django.contrib.auth',
