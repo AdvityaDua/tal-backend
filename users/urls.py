@@ -1,4 +1,4 @@
-from .views import AddVideoLinkView, NotificationsView, RegisterView, TestView, LoginView, PasswordChange, OTPGenerationView, PasswordChangeWithOTP, VerifyMailView, TokenRefreshView, LogoutView
+from .views import AddVideoLinkView, NotificationsView, RegisterView, TestView, LoginView, PasswordChange, OTPGenerationView, PasswordChangeWithOTP, VerifyMailView, TokenRefreshView, LogoutView, UserDetailsView
 from django.urls import path
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     path('add-video/', AddVideoLinkView.as_view(), name='add_video_link'),
     path('notifications/', NotificationsView.as_view(), name='notifications'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('details/', UserDetailsView.as_view(), name='user_details'),
 ]
