@@ -23,7 +23,7 @@ class NewAdminView(APIView):
             return Response({"error": "Invalid access code"}, status=status.HTTP_403_FORBIDDEN)
 
         try:
-            user = User.objects.create_user(email=email, password=password, is_admin=True)
+            user = User.objects.create_user(email=email, password=password, is_admin=True ,**request.data)
             return Response({"message": "Admin user created successfully", "user_id": user.email}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
