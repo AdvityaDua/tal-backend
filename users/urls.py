@@ -1,4 +1,4 @@
-from .views import AddVideoLinkView, NotificationsView, RegisterView, TestView, LoginView, PasswordChange, OTPGenerationView, PasswordChangeWithOTP, VerifyMailView, TokenRefreshView
+from .views import AddVideoLinkView, NotificationsView, RegisterView, TestView, LoginView, PasswordChange, OTPGenerationView, PasswordChangeWithOTP, VerifyMailView, TokenRefreshView, LogoutView
 from django.urls import path
 
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view(), name='refresh_token'),
     path('add-video/', AddVideoLinkView.as_view(), name='add_video_link'),
     path('notifications/', NotificationsView.as_view(), name='notifications'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

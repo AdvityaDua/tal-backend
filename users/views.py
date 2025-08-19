@@ -157,7 +157,8 @@ class TokenRefreshView(APIView):
         try:
             refresh = RefreshToken(refresh_token)
             access_token = str(refresh.access_token)
-            return Response({"access_token": access_token}, status=status.HTTP_200_OK)
+            user = User.objects.get(id=refresh['user_id'])
+            return Response({"access_token": access_token, 'user': UserSerializer(user).data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -169,3 +170,10 @@ class NotificationsView(APIView):
         serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        response = Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
+        response.delete_cookie('refresh_token', secure=True)
+        return response
