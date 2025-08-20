@@ -63,6 +63,46 @@ class OTPGenerationView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class OTPValidationView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        email = request.data.get('email')
+        otp_code = request.data.get('otp_code')
+        if not email or not otp_code:
+            return Response({"error": "Email and OTP code are required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email=email)
+            otp = OTP.objects.get(user=user, otp_code=otp_code)
+            if not otp.verify_otp(otp_code):
+                return Response({"error": "Invalid or expired OTP"}, status=status.HTTP_400_BAD_REQUEST)
+            user.first_login = True
+            user.save()
+            return Response({"message": "OTP validated successfully"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except OTP.DoesNotExist:
+            return Response({"error": "OTP not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ResetPassword(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        email = request.data.get('email')
+        new_password = request.data.get('new_password')
+        if not email or not new_password:
+            return Response({"error": "Email and new password are required"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email=email)
+            user.set_password(new_password)
+            user.first_login = False
+            user.save()
+            return Response({"message": "Password reset successfully"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class PasswordChange(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
