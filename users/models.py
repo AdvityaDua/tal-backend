@@ -20,6 +20,7 @@ class User(AbstractBaseUser):
     institute_name = models.CharField(max_length=255, blank=True, null=True)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    team_name = models.CharField(max_length=30, blank=True, null=True)
     team_members = models.JSONField(default=list, blank=True)
     first_login = models.BooleanField(default=True)
     email_verified = models.BooleanField(default=False)
