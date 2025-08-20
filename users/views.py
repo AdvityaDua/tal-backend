@@ -56,7 +56,7 @@ class OTPGenerationView(APIView):
             if res:
                 return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
             else:
-                return Response({"error": e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"error": err}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
