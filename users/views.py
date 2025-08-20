@@ -52,12 +52,12 @@ class OTPGenerationView(APIView):
             otp_code = str(random.randint(100000, 999999))
             OTP.objects.filter(user=user).delete()
             OTP.objects.create(user=user, otp_code=otp_code)
-            send_verification_email(user, otp_code)
+            if send_verification_email(user, otp_code):
+                return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
 
 
 class PasswordChange(APIView):
@@ -157,7 +157,8 @@ class TokenRefreshView(APIView):
         try:
             refresh = RefreshToken(refresh_token)
             access_token = str(refresh.access_token)
-            user = User.objects.get(id=refresh['user_id'])
+            user_id = refresh.payload.get('user_id')
+            user = User.objects.get(id=user_id)
             return Response({"access_token": access_token, 'user': UserSerializer(user).data}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -166,7 +167,7 @@ class TokenRefreshView(APIView):
 class NotificationsView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        notifications = Notification.objects.filter(Q(user=request.user) | Q(user="all"))
+        notifications = Notification.objects.filter(Q(user=str(request.user)) | Q(user="all"))
         serializer = NotificationSerializer(notifications, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
