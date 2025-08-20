@@ -90,31 +90,19 @@ class TokenRefreshView(APIView):
             return Response({"access_token": access_token}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
 
-
-class TeamsView(APIView):
+class TeamView(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request):
         teams = User.objects.filter(is_admin=False)
         serializer = UserSerializer(teams, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class TeamView(APIView):
-    permission_classes = [IsAdminUser]
-    def get(self, request, team_id):
-        try:
-            team = User.objects.get(email=team_id, is_admin=False)
-            serializer = UserSerializer(team)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except User.DoesNotExist:
-            return Response({"error": "Team member not found"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
     
     def patch(self, request, team_id):
         try:
-            team = User.objects.get(email=team_id, is_admin=False)
+            team = User.objects.get(id=team_id, is_admin=False)
             serializer = UserSerializer(team, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
@@ -129,7 +117,7 @@ class TeamView(APIView):
 
     def delete(self, request, team_id):
         try:
-            team = User.objects.get(email=team_id, is_admin=False)
+            team = User.objects.get(id=team_id, is_admin=False)
             team.delete()
             return Response({"message": "Team member deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
