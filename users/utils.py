@@ -9,8 +9,8 @@ def send_verification_email(user, otp_code):
 
     try:
         send_mail(subject, message=html_message, html_message=html_message, from_email=from_email, recipient_list=recipient_list)
-        return True
+        return True, None
     except Exception as e:
         print(f"Error sending email: {e}")
-        return False
+        return False, str(e)
 

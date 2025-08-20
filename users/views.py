@@ -52,10 +52,11 @@ class OTPGenerationView(APIView):
             otp_code = str(random.randint(100000, 999999))
             OTP.objects.filter(user=user).delete()
             OTP.objects.create(user=user, otp_code=otp_code)
-            if send_verification_email(user, otp_code):
+            res, err = send_verification_email(user, otp_code)
+            if res:
                 return Response({"message": "OTP sent successfully"}, status=status.HTTP_200_OK)
             else:
-                return Response({"error": "Failed to send OTP"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return Response({"error": e}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except User.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
