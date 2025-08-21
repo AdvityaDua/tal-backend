@@ -1,4 +1,4 @@
-from .views import AddVideoLinkView, NotificationsView, RegisterView, TestView, LoginView, PasswordChange, OTPGenerationView, PasswordChangeWithOTP, VerifyMailView, TokenRefreshView, LogoutView, UserDetailsView, OTPValidationView, ResetPassword
+from .views import AddVideoLinkView, NotificationsView, RegisterView, TestView, LoginView, PasswordChange, OTPGenerationView, PasswordChangeWithOTP, VerifyMailView, TokenRefreshView, LogoutView, UserDetailsView, OTPValidationView, ResetPassword, FreezeVideoView
 from django.urls import path
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('details/', UserDetailsView.as_view(), name='user_details'),
     path('validate/otp/', OTPValidationView.as_view(), name='validate_otp'),
     path('reset/password/', ResetPassword.as_view(), name='reset_password'),
+    path('freeze-video/', FreezeVideoView.as_view(), name='freeze_video'),
 ]

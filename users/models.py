@@ -24,7 +24,8 @@ class User(AbstractBaseUser):
     team_members = models.JSONField(default=list, blank=True)
     first_login = models.BooleanField(default=True)
     email_verified = models.BooleanField(default=False)
-    video_link = models.URLField(blank=True, null=True)
+    video_link = models.JSONField(default=list, blank=True)
+    video_freeze = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     
     USERNAME_FIELD = "email"

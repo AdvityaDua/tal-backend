@@ -8,11 +8,13 @@ from .utils import send_verification_email
 from admins.models import Notification
 from admins.serializers import NotificationSerializer
 from django.db.models import Q
+from django.utils import timezone
 
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
+        request.data['video_link'] = []
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
@@ -181,12 +183,14 @@ class AddVideoLinkView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         user = request.user
+        if user.video_freeze:
+            return Response({"error": "Video upload is currently frozen"}, status=status.HTTP_403_FORBIDDEN)
         video_link = request.data.get('video_link')
-        
         if not video_link:
             return Response({"error": "Video link is required"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user.video_link = video_link
+
+        current_timestamp = timezone.now()
+        user.video_link.append({"url": video_link, "added_at": current_timestamp})
         user.save()
         return Response({"message": "Video link added successfully"}, status=status.HTTP_200_OK)
     
@@ -229,3 +233,20 @@ class UserDetailsView(APIView):
         user = request.user
         serializer = UserSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def patch(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class FreezeVideoView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.user
+        user.video_freeze = True
+        user.save()
+        return Response({"message": "Video upload has been frozen"}, status=status.HTTP_200_OK)
