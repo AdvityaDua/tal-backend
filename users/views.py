@@ -11,6 +11,8 @@ from django.db.models import Q
 from django.utils import timezone
 
 
+
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
@@ -189,7 +191,7 @@ class AddVideoLinkView(APIView):
         if not video_link:
             return Response({"error": "Video link is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        current_timestamp = timezone.now()
+        current_timestamp = timezone.now().isoformat()
         user.video_link.append({"url": video_link, "added_at": current_timestamp})
         user.save()
         return Response({"message": "Video link added successfully"}, status=status.HTTP_200_OK)
@@ -250,3 +252,6 @@ class FreezeVideoView(APIView):
         user.video_freeze = True
         user.save()
         return Response({"message": "Video upload has been frozen"}, status=status.HTTP_200_OK)
+
+
+

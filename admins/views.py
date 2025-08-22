@@ -165,3 +165,11 @@ class NotificationsView(APIView):
             return Response({"error": "Notification not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class FreezeAll(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        User.objects.filter(is_admin=False).update(video_freeze=True)
+        return Response({"message": "All team members' videos have been frozen"}, status=status.HTTP_200_OK)

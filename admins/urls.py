@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import NewAdminView, AdminLoginView, AdminChangePasswordView, TokenRefreshView, TeamView, NotificationsView
+from .views import NewAdminView, AdminLoginView, AdminChangePasswordView, TokenRefreshView, TeamView, NotificationsView, FreezeAll
 
 urlpatterns = [
     path('register/', NewAdminView.as_view(), name='new_admin'),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('teams/<int:team_id>/', TeamView.as_view(), name='admin_team_detail'),
     path('notifications/', NotificationsView.as_view(), name='admin_notifications'),
     path('notifications/<int:notification_id>/', NotificationsView.as_view(), name='admin_notification_detail'),
+    path('freeze-video/', FreezeAll.as_view(), name='freeze_video')
 ]
