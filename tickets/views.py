@@ -50,8 +50,8 @@ class MessageView(APIView):
     def post(self, request):
         data = request.data
         ticket_id = data.pop("ticket_id", None)
-        
-        if Ticket.objects.filter(id=ticket_id).first().status == "closed":
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+        if ticket.status == "closed":
             return Response({"detail": "Cannot send message. Ticket is closed."}, status=status.HTTP_400_BAD_REQUEST)
 
         data['sender_type'] = "admin" if request.user.is_admin else "user"
@@ -59,7 +59,7 @@ class MessageView(APIView):
             return Response({"detail": "Invalid ticket ID."}, status=status.HTTP_400_BAD_REQUEST)
         serializer = MessageSerializer(data=data)
          
-        data['ticket'] = Ticket.objects.get(id=ticket_id).pk
+        data['ticket'] = Ticket.objects.get(id=ticket_id).id
         
         if serializer.is_valid():
             serializer.save()
@@ -79,10 +79,10 @@ class MarkMessageAsRead(APIView):
         message = get_object_or_404(Message, id=message_id)
 
         # Optional: permission check
-        if message.sender_type == "admin" and not getattr(request.user, "is_admin", False):
+        if message.sender_type == "user" and not getattr(request.user, "is_admin", False):
             return Response({"detail": "You cannot mark admin messages as read."}, status=status.HTTP_403_FORBIDDEN)
 
-        if message.sender_type == "user" and message.ticket.user != request.user:
+        if message.sender_type == "admin" and message.ticket.user != request.user:
             return Response({"detail": "You cannot mark other user's messages as read."}, status=status.HTTP_403_FORBIDDEN)
 
         message.is_read = True
