@@ -12,10 +12,10 @@ from .serializers import NotificationSerializer
 class NewAdminView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        name = request.data.get('name')
-        access_code = request.data.get('access_code')
+        email = request.data.pop('email')
+        password = request.data.pop('password')
+        name = request.data.pop('name')
+        access_code = request.data.pop('access_code')
         if not email or not password or not name or not access_code:
             return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
 
